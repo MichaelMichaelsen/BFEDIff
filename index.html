@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="shortcut icon" type="image/ico" href="icon/favicon.ico">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0">
+	<title>Test06data BFE Difference(version v1.1)</title>
+
+	<link rel="stylesheet" type="text/css" href="css/dataTable.custom.css"/>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css">
+
+	<script type="text/javascript" src="//code.jquery.com/jquery-1.12.4.js"></script>
+	<script type="text/javascript" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
+	<script type="text/javascript" src="//cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/select/1.2.1/js/dataTables.select.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/dataTables.editor.js"></script>
+	<script type="text/javascript" src="js/lodash.core.js"></script>
+	<script type="text/javascript" src="js/reg.js"></script>
+  <style>
+	.highlight {
+	    color: red;
+			font-weight: bold;
+			background-color: yellow;
+	}
+	</style>
+  <script>
+  $(document).ready(function() {
+		function highlight(newElem, oldElem){
+		    var newText = newElem.text();
+		    var oldText = oldElem.text();
+				//console.log('newText:' + newText);
+				//console.log('oldText:' + oldText);
+
+		    var text = "";
+		    var spanOpen = false;
+		    newElem.text().split("").forEach(function(value, index){
+						if (value != oldText.charAt(index)){
+		            text += !spanOpen ? "<span class='highlight'>" : "";
+		            text += value;
+		            spanOpen = true;
+		        } else {
+		            text += spanOpen ? "</span>" : "";
+		            text += value;
+		            spanOpen = false;
+		        }
+		    });
+				//console.log('highlight'+ text);
+		    newElem.html(text);
+		}
+    //bfe = '100015685';
+    //$('#bfe').text(bfe);
+    //test03object = MUSamletFastEjendom(test03, bfe, $('#test03muobject'));
+    //test06object = MUSamletFastEjendom(test06, bfe, $('#test06muobject'));
+	  //if(_.isEqual(test03object, test06object)){
+			//console.log('diff ok');
+			//$('#equal').addClass("btn-primary")
+			//$('#equal').text("Match")
+		//}
+		//else {
+			//console.log('diff failed');
+			//$('#equal').addClass("btn-danger")
+			//$('#equal').text("No Match")
+		//}
+		table = $('#bfetable').DataTable({
+				"ajax": 'data/Test06BFEout.json',
+				select: true
+		});
+
+		table.on( 'click', 'tr', function ( e, dt, type, indexes) {
+				if ( $(this).hasClass('selected') ) {
+	          $(this).removeClass('selected');
+	      }
+	      else {
+	          table.$('tr.selected').removeClass('selected');
+	          $(this).addClass('selected');
+	      }
+			} );
+
+		table.on( 'select', function ( e, dt, type, indexes ) {
+				console.log('select '+indexes)
+				var data = table.data().toArray();
+		    if ( type === 'row' ) {
+	        bfenummer    = data[indexes][0];
+					ejendomstype = data[indexes][1];
+					var reg      = /(\w*)/;
+					var etype    = ejendomstype.match(reg);
+					console.log(bfenummer);
+					console.log(ejendomstype);
+					console.log(etype[0]);
+					$("#analyser").text('Analyser '+bfenummer);
+					$('#test03muobject').text(' ');
+					MUSamletFastEjendom(test03, bfenummer,etype[0], '#test03muobject');
+					$('#test06muobject').text(' ');
+					MUSamletFastEjendom(test06, bfenummer,etype[0], '#test06muobject');
+				}
+			}
+		);
+
+		$("#bfetable").addClass("compact");
+		$("#analyser").on('click',function() {
+				highlight($('#test06muobject'),$('#test03muobject'))
+			});
+  })
+  </script>
+<style>
+tfoor.tr.th
+{
+    font-size:12px;
+}
+</style>
+</head>
+<body>
+  <div class="container-fluid">
+
+		<div class="row">
+			<div class="col-md-12">
+				<table id="bfetable" class="display" cellspacing="0" width="100%">
+		      <thead>
+		          <tr>
+		              <th>BFEnr</th>
+									<th>Ejdtype</th>
+									<th>Adresse</th>
+									<th>Test03</th>
+		              <th>Test06</th>
+		              <th>Match</th>
+		          </tr>
+		      </thead>
+		      <tfoot>
+		          <tr>
+								<th>BFEnr</th>
+								<th>Ejdtype</th>
+								<th>Adresse</th>
+								<th>Test03</th>
+								<th>Test06</th>
+								<th>Match</th>
+		          </tr>
+		      </tfoot>
+		      <tbody>
+		          <tr>
+		              <td>100015663</td>
+									<td>SFE (flere jord 1 kom)</td>
+									<td>Øde-Hastrup-Vej 32</td>
+		              <td>OK</td>
+		              <td>OK</td>
+		              <td>OK</td>
+		          </tr>
+						</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6">
+				<h4>Test03</h4>
+				<div><pre id="test03muobject"></pre></div>
+			</div>
+			<div class="col-md-6">
+				<h4>Test06</h4>
+				<div><pre id="test06muobject"></pre></div>
+			</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<button type="button" class="btn btn-primary" id="analyser">Analyser</button>
+		</div>
+	</div>
+
+</div>
+
+</body>
+</html>
